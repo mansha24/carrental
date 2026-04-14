@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
-import { assignUserRole, getAllUsers, getSessionToken, getUserBySessionToken } from "../../lib/auth";
+import { assignUserRole, createUser, getAllUsers, getSessionToken, getUserBySessionToken } from "../../lib/auth";
+
+async function getAdminUser(request: Request) {
+  const token = getSessionToken(request);
+  if (!token) {
+    return null;
+  }
+  const user = await getUserBySessionToken(token);
+  if (!user || user.role !== "admin") {
+    return null;
+  }
+  return user;
+}
 
 export async function GET(request: Request) {
   try {
-    const token = getSessionToken(request);
-    if (!token) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
-    }
-
-    const user = await getUserBySessionToken(token);
-    if (!user || user.role !== "admin") {
+    const user = await getAdminUser(request);
+    if (!user) {
       return NextResponse.json({ error: "Admin access required." }, { status: 403 });
     }
 
@@ -20,15 +27,30 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+export async function POST(request: Request) {
   try {
-    const token = getSessionToken(request);
-    if (!token) {
-      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    const user = await getAdminUser(request);
+    if (!user) {
+      return NextResponse.json({ error: "Admin access required." }, { status: 403 });
     }
 
-    const user = await getUserBySessionToken(token);
-    if (!user || user.role !== "admin") {
+    const body = await request.json();
+    const { name, email, password, role } = body as { name: string; email: string; password: string; role: string };
+    if (!name || !email || !password || !role) {
+      return NextResponse.json({ error: "Name, email, password, and role are required." }, { status: 400 });
+    }
+
+    const created = await createUser({ name, email, password, role: role as "user" | "admin" });
+    return NextResponse.json({ user: created }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message || "Unable to create user." }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const user = await getAdminUser(request);
+    if (!user) {
       return NextResponse.json({ error: "Admin access required." }, { status: 403 });
     }
 

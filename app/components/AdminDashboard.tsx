@@ -11,6 +11,10 @@ export default function AdminDashboard() {
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [selectedRole, setSelectedRole] = useState<"user" | "admin">("user");
+  const [createName, setCreateName] = useState("");
+  const [createEmail, setCreateEmail] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
+  const [createRole, setCreateRole] = useState<"user" | "admin">("user");
   const [notificationEmail, setNotificationEmail] = useState("");
   const [notificationTitle, setNotificationTitle] = useState("");
   const [notificationMessage, setNotificationMessage] = useState("");
@@ -111,6 +115,34 @@ export default function AdminDashboard() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Unable to update role.");
       setStatus(`Assigned ${selectedRole} to ${data.user.email}.`);
+      fetchPending();
+    } catch (error) {
+      setStatus((error as Error).message);
+    }
+  };
+
+  const handleCreateUser = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus(null);
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: createName,
+          email: createEmail,
+          password: createPassword,
+          role: createRole,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to create user.");
+      setCreateName("");
+      setCreateEmail("");
+      setCreatePassword("");
+      setCreateRole("user");
+      setStatus(`Created ${data.user.role} account for ${data.user.email}.`);
       fetchPending();
     } catch (error) {
       setStatus((error as Error).message);
@@ -235,24 +267,41 @@ export default function AdminDashboard() {
 
           <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
             <div className="space-y-4">
-              <p className="text-sm uppercase tracking-[0.32em] text-cyan-500">User role management</p>
-              <h3 className="text-2xl font-semibold text-slate-950">Assign roles and manage access</h3>
-              <p className="text-slate-600">Update user permissions so trusted accounts can also be elevated to admin status.</p>
+              <p className="text-sm uppercase tracking-[0.32em] text-cyan-500">User management</p>
+              <h3 className="text-2xl font-semibold text-slate-950">Create users and manage roles</h3>
+              <p className="text-slate-600">Create user accounts directly from the admin dashboard and assign them the correct role.</p>
             </div>
 
-            <form onSubmit={handleAssignRole} className="mt-8 grid gap-4">
+            <form onSubmit={handleCreateUser} className="mt-8 grid gap-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <input
+                  placeholder="Full name"
+                  value={createName}
+                  onChange={(event) => setCreateName(event.target.value)}
+                  required
+                  className="rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                />
+                <input
                   type="email"
-                  placeholder="user@example.com"
-                  value={selectedUserEmail}
-                  onChange={(event) => setSelectedUserEmail(event.target.value)}
+                  placeholder="Email address"
+                  value={createEmail}
+                  onChange={(event) => setCreateEmail(event.target.value)}
+                  required
+                  className="rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={createPassword}
+                  onChange={(event) => setCreatePassword(event.target.value)}
                   required
                   className="rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
                 />
                 <select
-                  value={selectedRole}
-                  onChange={(event) => setSelectedRole(event.target.value as "user" | "admin")}
+                  value={createRole}
+                  onChange={(event) => setCreateRole(event.target.value as "user" | "admin")}
                   className="rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
                 >
                   <option value="user">User</option>
@@ -261,11 +310,41 @@ export default function AdminDashboard() {
               </div>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-3xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="inline-flex items-center justify-center rounded-3xl bg-cyan-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-cyan-700"
               >
-                Update role
+                Create user account
               </button>
             </form>
+
+            <div className="mt-10 border-t border-slate-200 pt-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.32em] text-slate-700">Update existing user role</p>
+              <form onSubmit={handleAssignRole} className="mt-6 grid gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <input
+                    type="email"
+                    placeholder="user@example.com"
+                    value={selectedUserEmail}
+                    onChange={(event) => setSelectedUserEmail(event.target.value)}
+                    required
+                    className="rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                  />
+                  <select
+                    value={selectedRole}
+                    onChange={(event) => setSelectedRole(event.target.value as "user" | "admin")}
+                    className="rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center rounded-3xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                >
+                  Update role
+                </button>
+              </form>
+            </div>
 
             <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
               <p className="text-sm font-semibold uppercase tracking-[0.32em] text-slate-700">Current users</p>
