@@ -2,8 +2,6 @@ import type { Car } from "./types";
 import { getAvailableCars } from "./lib/db";
 import Header from "./components/Header";
 import BookingPanel from "./components/BookingPanel";
-import BookingTracker from "./components/BookingTracker";
-import AdminDashboard from "./components/AdminDashboard";
 import FleetSection from "./components/FleetSection";
 import FeaturesSection from "./components/FeaturesSection";
 
@@ -72,16 +70,27 @@ export default async function Home() {
           <div className="space-y-10">
             <FleetSection cars={cars} />
             <FeaturesSection />
-            <section id="dashboard" className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+            <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="space-y-3">
-                <p className="text-sm uppercase tracking-[0.32em] text-cyan-500">User dashboard</p>
-                <h2 className="text-3xl font-semibold text-slate-950">Track your booking from one place.</h2>
+                <p className="text-sm uppercase tracking-[0.32em] text-cyan-500">Dashboard access</p>
+                <h2 className="text-3xl font-semibold text-slate-950">Separate pages for user and admin dashboards.</h2>
                 <p className="max-w-2xl text-slate-600">
-                  After you confirm a reservation, use the tracker below to follow the booking status by email. This is your access point for real-time booking updates.
+                  Manage your reservation status on the user dashboard or approve bookings through the dedicated admin panel.
                 </p>
               </div>
-              <div className="mt-10">
-                <BookingTracker />
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <a
+                  href="/user-dashboard"
+                  className="inline-flex items-center justify-center rounded-3xl border border-cyan-200 bg-cyan-50 px-6 py-4 text-center text-sm font-semibold text-cyan-700 transition hover:bg-cyan-100"
+                >
+                  Go to User Dashboard
+                </a>
+                <a
+                  href="/admin-dashboard"
+                  className="inline-flex items-center justify-center rounded-3xl border border-slate-200 bg-slate-50 px-6 py-4 text-center text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+                >
+                  Go to Admin Dashboard
+                </a>
               </div>
             </section>
           </div>
@@ -90,7 +99,6 @@ export default async function Home() {
             <section id="book">
               <BookingPanel cars={cars} />
             </section>
-            <AdminDashboard />
           </div>
         </div>
       </div>
