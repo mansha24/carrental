@@ -10,6 +10,12 @@ export default function Header() {
         </div>
 
         <nav className="flex flex-wrap items-center gap-3 text-sm text-slate-600 sm:gap-5">
+          <Link
+            href="/"
+            className="rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-cyan-700 transition-transform duration-500 hover:-translate-y-1 hover:border-cyan-300 hover:bg-cyan-100 animate-float"
+          >
+            Home
+          </Link>
           <Link href="#fleet" className="transition hover:text-slate-900">
             Fleet
           </Link>
