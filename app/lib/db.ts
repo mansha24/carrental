@@ -1,4 +1,6 @@
 import { Pool } from "pg";
+import { readFileSync } from "fs";
+import path from "path";
 import type { Booking, BookingRequest, Car, CarInput } from "../types";
 
 const connectionString = process.env.DATABASE_URL;
@@ -11,7 +13,45 @@ function getPool() {
   return pool;
 }
 
+let schemaEnsured = false;
+let initSchemaPromise: Promise<void> | null = null;
+
+async function ensureSchema() {
+  if (schemaEnsured) {
+    return;
+  }
+
+  if (!initSchemaPromise) {
+    initSchemaPromise = (async () => {
+      const client = await getPool().connect();
+      try {
+        const result = await client.query(
+          `SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users') AS exists`
+        );
+        if (!result.rows[0]?.exists) {
+          const schemaPath = path.join(process.cwd(), "db/schema.sql");
+          const schemaSql = readFileSync(schemaPath, "utf8");
+          const statements = schemaSql
+            .split(/;\s*(?:\r?\n|$)/)
+            .map((statement) => statement.trim())
+            .filter(Boolean);
+
+          for (const statement of statements) {
+            await client.query(statement);
+          }
+        }
+      } finally {
+        client.release();
+      }
+      schemaEnsured = true;
+    })();
+  }
+
+  return initSchemaPromise;
+}
+
 export async function query(text: string, params: unknown[] = []) {
+  await ensureSchema();
   const client = await getPool().connect();
   try {
     return await client.query(text, params);
