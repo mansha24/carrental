@@ -103,6 +103,13 @@ export async function createCar(payload: CarInput): Promise<Car> {
   return mapCar(result.rows[0]);
 }
 
+export async function deleteCar(id: number): Promise<void> {
+  const result = await query(`DELETE FROM cars WHERE id = $1`, [id]);
+  if (result.rowCount === 0) {
+    throw new Error("Car not found.");
+  }
+}
+
 function formatBookingRow(row: any): Booking {
   const startDate = row.start_date instanceof Date ? row.start_date.toISOString().split("T")[0] : row.start_date;
   const createdAt = row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at;

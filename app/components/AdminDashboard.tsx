@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Booking, User } from "../types";
+import type { Booking, Car, User } from "../types";
 
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [cars, setCars] = useState<Car[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [carsLoading, setCarsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<number | null>(null);
+  const [carActionLoading, setCarActionLoading] = useState<number | null>(null);
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
   const [selectedRole, setSelectedRole] = useState<"user" | "admin">("user");
   const [createName, setCreateName] = useState("");
@@ -55,8 +58,24 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchCars = async () => {
+    setCarsLoading(true);
+    setStatus(null);
+    try {
+      const response = await fetch("/api/cars");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to load cars.");
+      setCars(data);
+    } catch (error) {
+      setStatus((error as Error).message);
+    } finally {
+      setCarsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchPending();
+    fetchCars();
   }, []);
 
   const updateStatus = async (bookingId: number, statusValue: string) => {
@@ -174,8 +193,30 @@ export default function AdminDashboard() {
       });
       setStatus(`Car ${data.car.brand} ${data.car.model} created successfully.`);
       fetchPending();
+      fetchCars();
     } catch (error) {
       setStatus((error as Error).message);
+    }
+  };
+
+  const handleDeleteCar = async (carId: number) => {
+    setCarActionLoading(carId);
+    setStatus(null);
+
+    try {
+      const response = await fetch("/api/cars", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: carId }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to delete car.");
+      setCars((current) => current.filter((car) => car.id !== carId));
+      setStatus("Car removed from the fleet.");
+    } catch (error) {
+      setStatus((error as Error).message);
+    } finally {
+      setCarActionLoading(null);
     }
   };
 
@@ -499,6 +540,52 @@ export default function AdminDashboard() {
                 Add car to fleet
               </button>
             </form>
+
+            <div className="mt-8 rounded-[2rem] border border-slate-200 bg-slate-50 p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Manage cars</p>
+                  <h3 className="text-xl font-semibold text-slate-950">Current fleet</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchCars}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+                >
+                  Refresh cars
+                </button>
+              </div>
+
+              {carsLoading ? (
+                <p className="mt-6 text-slate-600">Loading cars...</p>
+              ) : cars.length === 0 ? (
+                <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-white p-6 text-slate-600">
+                  No cars are currently available in the fleet.
+                </div>
+              ) : (
+                <div className="mt-6 space-y-4">
+                  {cars.map((car) => (
+                    <div key={car.id} className="rounded-[1.5rem] border border-slate-200 bg-white p-5">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-lg font-semibold text-slate-950">{car.brand} {car.model}</p>
+                          <p className="text-sm text-slate-600">{car.year} · {car.category} · ${car.pricePerDay}/day</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteCar(car.id)}
+                          disabled={carActionLoading === car.id}
+                          className="inline-flex items-center justify-center rounded-3xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          Delete car
+                        </button>
+                      </div>
+                      <p className="mt-3 text-sm text-slate-600">{car.description}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
