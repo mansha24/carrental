@@ -17,8 +17,18 @@ export default function FleetSection({ cars }: FleetSectionProps) {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {cars.map((car) => (
-          <article key={car.id} className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <img src={car.image} alt={`${car.brand} ${car.model}`} className="h-52 w-full object-cover" />
+          <article
+            key={car.id}
+            className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
+          >
+            <div className="relative overflow-hidden">
+              <img
+                src={car.image}
+                alt={`${car.brand} ${car.model}`}
+                className="h-52 w-full object-cover transition duration-700 group-hover:scale-105"
+              />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/80 to-transparent" />
+            </div>
             <div className="p-5">
               <p className="text-sm uppercase tracking-[0.28em] text-cyan-500">{car.category}</p>
               <h3 className="mt-3 text-xl font-semibold text-slate-950">{car.brand} {car.model}</h3>

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-xl transition-shadow duration-300">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.32em] text-cyan-700">Car Rental</p>
@@ -17,13 +17,16 @@ export default function Header() {
             Book now
           </Link>
           <Link href="/user-dashboard" className="transition hover:text-slate-900">
-            User dashboard
+            User portal
+          </Link>
+          <Link href="/login" className="transition hover:text-slate-900">
+            Login
           </Link>
           <Link
-            href="/admin-dashboard"
-            className="rounded-full border border-slate-200 px-4 py-2 text-slate-700 transition hover:border-slate-300 hover:text-slate-950"
+            href="/signup"
+            className="rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-cyan-700 transition hover:border-cyan-300 hover:bg-cyan-100"
           >
-            Admin access
+            Sign up
           </Link>
         </nav>
       </div>

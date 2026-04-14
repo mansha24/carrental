@@ -42,7 +42,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-2xl shadow-slate-900/20 ring-1 ring-white/10">
+          <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-2xl shadow-slate-900/20 ring-1 ring-white/10 animate-float">
             <div className="space-y-4">
               <p className="uppercase tracking-[0.32em] text-cyan-300">Reserve your ride</p>
               <h2 className="text-3xl font-semibold">Book a premium car in just a few steps.</h2>
@@ -68,8 +68,11 @@ export default async function Home() {
 
         <div className="mt-16 grid gap-10 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-10">
-            <FleetSection cars={cars} />
-            <FeaturesSection />
+            <section id="fleet" className="space-y-10">
+              <FleetSection cars={cars} />
+              <FeaturesSection />
+            </section>
+
             <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="space-y-3">
                 <p className="text-sm uppercase tracking-[0.32em] text-cyan-500">Dashboard access</p>

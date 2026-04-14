@@ -1,3 +1,22 @@
+export type UserRole = "user" | "admin";
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+};
+
+export type Notification = {
+  id: number;
+  userId: number;
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+};
+
 export type Car = {
   id: number;
   brand: string;
@@ -11,6 +30,8 @@ export type Car = {
   description: string;
   category: string;
 };
+
+export type CarInput = Omit<Car, "id">;
 
 export type BookingRequest = {
   name: string;

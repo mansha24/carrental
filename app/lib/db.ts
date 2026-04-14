@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import type { Booking, BookingRequest, Car } from "../types";
+import type { Booking, BookingRequest, Car, CarInput } from "../types";
 
 const connectionString = process.env.DATABASE_URL;
 const pool = connectionString ? new Pool({ connectionString, max: 10 }) : null;
@@ -20,13 +20,8 @@ export async function query(text: string, params: unknown[] = []) {
   }
 }
 
-export async function getAvailableCars(): Promise<Car[]> {
-  const result = await query(
-    `SELECT id, brand, model, year, condition, price_per_day, seats, available, image, description, category
-     FROM cars WHERE available = true ORDER BY brand, model`
-  );
-
-  return result.rows.map((row: any) => ({
+function mapCar(row: any): Car {
+  return {
     id: row.id,
     brand: row.brand,
     model: row.model,
@@ -38,7 +33,34 @@ export async function getAvailableCars(): Promise<Car[]> {
     image: row.image,
     description: row.description,
     category: row.category,
-  }));
+  };
+}
+
+export async function getAvailableCars(): Promise<Car[]> {
+  return getCars();
+}
+
+export async function getCars(category?: string): Promise<Car[]> {
+  const queryText = category
+    ? `SELECT id, brand, model, year, condition, price_per_day, seats, available, image, description, category
+       FROM cars WHERE available = true AND category = $1 ORDER BY brand, model`
+    : `SELECT id, brand, model, year, condition, price_per_day, seats, available, image, description, category
+       FROM cars WHERE available = true ORDER BY brand, model`;
+
+  const result = await query(queryText, category ? [category] : []);
+  return result.rows.map(mapCar);
+}
+
+export async function createCar(payload: CarInput): Promise<Car> {
+  const { brand, model, year, condition, pricePerDay, seats, image, description, category, available } = payload;
+  const result = await query(
+    `INSERT INTO cars (brand, model, year, condition, price_per_day, seats, available, image, description, category)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     RETURNING id, brand, model, year, condition, price_per_day, seats, available, image, description, category`,
+    [brand, model, year, condition, pricePerDay, seats, available, image, description, category]
+  );
+
+  return mapCar(result.rows[0]);
 }
 
 function formatBookingRow(row: any): Booking {

@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { createBooking, getBookingsByEmail, getBookingsByStatus, updateBookingStatus } from "../../lib/db";
+import {
+  createBooking,
+  getBookingsByEmail,
+  getBookingsByStatus,
+  updateBookingStatus,
+} from "../../lib/db";
+import { getSessionToken, getUserBySessionToken } from "../../lib/auth";
 import type { BookingRequest } from "../../types";
 
 export async function GET(request: Request) {
@@ -14,6 +20,14 @@ export async function GET(request: Request) {
     }
 
     if (status) {
+      const token = getSessionToken(request);
+      if (!token) {
+        return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+      }
+      const user = await getUserBySessionToken(token);
+      if (!user || user.role !== "admin") {
+        return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+      }
       const bookings = await getBookingsByStatus(status);
       return NextResponse.json(bookings);
     }
@@ -27,6 +41,16 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    const token = getSessionToken(request);
+    if (!token) {
+      return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+    }
+
+    const user = await getUserBySessionToken(token);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+    }
+
     const body = await request.json();
     const { id, status } = body as { id: number; status: string };
 
