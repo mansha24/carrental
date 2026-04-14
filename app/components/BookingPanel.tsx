@@ -16,6 +16,7 @@ export default function BookingPanel({ cars }: BookingPanelProps) {
   const [days, setDays] = useState(3);
   const [message, setMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [latestBookingId, setLatestBookingId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedCar = useMemo(
@@ -55,7 +56,10 @@ export default function BookingPanel({ cars }: BookingPanelProps) {
         throw new Error(result.error || "Unable to place booking.");
       }
 
-      setStatusMessage("Your booking was submitted successfully. We will contact you shortly.");
+      setLatestBookingId(result.booking?.id ?? null);
+      setStatusMessage(
+        `Your booking was submitted successfully. Use the tracker below with your email to check status. Booking #${result.booking?.id}`
+      );
       setName("");
       setEmail("");
       setPhone("");

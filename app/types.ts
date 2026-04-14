@@ -21,3 +21,11 @@ export type BookingRequest = {
   days: number;
   message?: string;
 };
+
+export type Booking = BookingRequest & {
+  id: number;
+  priceTotal: number;
+  status: string;
+  createdAt: string;
+  carName: string;
+};

@@ -1,6 +1,9 @@
 import type { Car } from "./types";
 import { getAvailableCars } from "./lib/db";
+import Header from "./components/Header";
 import BookingPanel from "./components/BookingPanel";
+import BookingTracker from "./components/BookingTracker";
+import AdminDashboard from "./components/AdminDashboard";
 import FleetSection from "./components/FleetSection";
 import FeaturesSection from "./components/FeaturesSection";
 
@@ -11,6 +14,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-900">
+      <Header />
       <div className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
         <section className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div className="space-y-8">
@@ -68,8 +72,26 @@ export default async function Home() {
           <div className="space-y-10">
             <FleetSection cars={cars} />
             <FeaturesSection />
+            <section id="dashboard" className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="space-y-3">
+                <p className="text-sm uppercase tracking-[0.32em] text-cyan-500">User dashboard</p>
+                <h2 className="text-3xl font-semibold text-slate-950">Track your booking from one place.</h2>
+                <p className="max-w-2xl text-slate-600">
+                  After you confirm a reservation, use the tracker below to follow the booking status by email. This is your access point for real-time booking updates.
+                </p>
+              </div>
+              <div className="mt-10">
+                <BookingTracker />
+              </div>
+            </section>
           </div>
-          <BookingPanel cars={cars} />
+
+          <div className="space-y-10">
+            <section id="book">
+              <BookingPanel cars={cars} />
+            </section>
+            <AdminDashboard />
+          </div>
         </div>
       </div>
     </main>
