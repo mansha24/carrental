@@ -37,6 +37,20 @@ body {
   }
 }
 
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.45);
+  }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+.glow-button {
+  animation: glowPulse 2.8s ease-in-out infinite;
 }

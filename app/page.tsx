@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import BookingPanel from "./components/BookingPanel";
 import FleetSection from "./components/FleetSection";
 import FeaturesSection from "./components/FeaturesSection";
+import HeroCarousel from "./components/HeroCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -42,27 +43,20 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-2xl shadow-slate-900/20 ring-1 ring-white/10 animate-float">
-            <div className="space-y-4">
-              <p className="uppercase tracking-[0.32em] text-cyan-300">Reserve your ride</p>
-              <h2 className="text-3xl font-semibold">Book a premium car in just a few steps.</h2>
-              <p className="text-slate-300">Tell us about your trip, choose the perfect vehicle, and we’ll secure your booking right away.</p>
-            </div>
-
-            <div className="mt-10 rounded-[2rem] bg-slate-900/95 p-6 ring-1 ring-slate-700/50">
-              <div className="space-y-4">
-                <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">Featured vehicle</p>
-                <div className="space-y-2">
-                  <p className="text-lg font-semibold text-white">{cars[0]?.brand} {cars[0]?.model}</p>
-                  <p className="text-sm text-slate-400">{cars[0]?.description}</p>
-                  <div className="flex flex-wrap gap-3 text-sm text-slate-300">
-                    <span className="rounded-full bg-white/10 px-3 py-1">${cars[0]?.pricePerDay}/day</span>
-                    <span className="rounded-full bg-white/10 px-3 py-1">{cars[0]?.year}</span>
-                    <span className="rounded-full bg-white/10 px-3 py-1">{cars[0]?.seats} seats</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <HeroCarousel cars={cars} />
+          <div className="mt-8 flex flex-wrap gap-4">
+            <a
+              href="/#book"
+              className="glow-button inline-flex items-center justify-center rounded-full bg-cyan-500 px-8 py-4 text-base font-semibold text-white shadow-[0_0_30px_rgba(56,189,248,0.35)] transition duration-300 hover:-translate-y-1 hover:bg-cyan-400"
+            >
+              Book a car now
+            </a>
+            <a
+              href="/user-dashboard"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-8 py-4 text-base font-semibold text-white transition duration-300 hover:border-white hover:bg-white/20"
+            >
+              Explore dashboard
+            </a>
           </div>
         </section>
 
