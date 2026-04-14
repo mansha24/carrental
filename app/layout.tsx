@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Car Rental System",
-  description: "A role-based car rental system with eligibility checks and admin approvals.",
+  title: "Car Rental Service",
+  description: "A full car rental services website with fleet browsing, bookings, and PostgreSQL backend integration.",
 };
 
 export default function RootLayout({
