@@ -28,15 +28,34 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
 ## Database setup
 
 This website uses PostgreSQL with Neon. After you connect your Neon database to Vercel, make sure the environment variable `DATABASE_URL` is set.
 
-To initialize the schema and seed the fleet, run:
+For local development, copy the example file to `.env.local`:
 
 ```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` and paste your Neon connection string for `DATABASE_URL`.
+
+To initialize the schema and seed the fleet, load the env file and run:
+
+```bash
+source .env.local
 psql "$DATABASE_URL" -f db/schema.sql
 ```
+
+Or run `psql` directly with your connection string:
+
+```bash
+psql "postgresql://username:password@host:port/database?sslmode=require" -f db/schema.sql
+```
+
+> If `psql` tries to connect on `/var/run/postgresql/.s.PGSQL.5432`, that means `DATABASE_URL` was not set in your current shell.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
