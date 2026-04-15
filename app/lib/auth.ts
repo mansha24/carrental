@@ -1,5 +1,6 @@
 import { randomUUID, createHash } from "crypto";
 import { query } from "./db";
+import { sendEmail } from "./email";
 import type { User, UserRole, Notification } from "../types";
 
 export function hashPassword(password: string) {
@@ -156,6 +157,13 @@ export async function createNotificationForUserEmail(email: string, title: strin
   if (!user) {
     throw new Error("User not found.");
   }
+
+  await sendEmail({
+    to: user.email,
+    subject: title,
+    text: message,
+    html: `<div style="font-family:system-ui, sans-serif; line-height:1.5; color:#111;"><h2>${title}</h2><p>${message}</p></div>`,
+  });
 
   const result = await query(
     `INSERT INTO notifications (user_id, title, message)

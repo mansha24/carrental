@@ -41,6 +41,21 @@ cp .env.example .env.local
 
 Then edit `.env.local` and paste your Neon connection string for `DATABASE_URL`.
 
+### SMTP email setup
+
+To enable actual notification emails, set up SMTP variables in your `.env.local` file. Example:
+
+```bash
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-email-app-password
+SMTP_FROM="Car Rental <your-email@gmail.com>"
+```
+
+If you use Gmail, you may need an App Password and to enable SMTP access in your account settings.
+
 To initialize the schema and seed the fleet, load the env file and run:
 
 ```bash
